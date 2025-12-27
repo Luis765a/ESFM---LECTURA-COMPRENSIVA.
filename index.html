@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>EduBotic | ESFM 2026 - Comprensión Lectora</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="assets/edubotic-logo.png">
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg fixed-top custom-nav">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+      <img src="assets/edubotic-logo.png" class="logo-nav" alt="EduBotic">
+      <div>
+        <div>EduBotic</div>
+        <small class="small-muted">ESFM 2026 · Comprensión Lectora</small>
+      </div>
+    </a>
+
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <span class="top-pill">
+        <i class="bi bi-shield-lock"></i> Sin base de datos · Local
+      </span>
+      <button class="btn btn-soft btn-sm" id="btnTheme" type="button" title="Tema">
+        <i class="bi bi-moon-stars"></i>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<main class="container-main" style="margin-top:90px;">
+
+  <!-- START -->
+  <section id="screenStart" class="glass-card p-4 p-md-5">
+    <h1 class="section-title mb-2">
+      Simulador tipo <span style="color:var(--edubotic-accent)">Oracle</span>
+    </h1>
+    <p class="section-sub mb-4">
+      Elige un <strong>tema</strong>, lee la <strong>comprensión lectora</strong> y luego responde
+      <strong>30 preguntas aleatorias</strong> del tema seleccionado.
+    </p>
+
+    <div class="row g-4 mb-4">
+      <div class="col-lg-6">
+        <label class="small-muted mb-1">Tema / Lectura</label>
+        <select id="topicSelect" class="form-select"></select>
+        <div class="d-flex gap-2 mt-2">
+          <button class="btn btn-soft" id="btnRead" type="button">
+            <i class="bi bi-book"></i> Ver lectura
+          </button>
+          <span class="small-muted align-self-center">
+            Banco del tema: <strong><span id="bankCountTopic">0</span></strong>
+          </span>
+        </div>
+      </div>
+
+      <div class="col-lg-3">
+        <label class="small-muted mb-1">Tiempo del examen</label>
+        <select id="timeLimit" class="form-select">
+          <option value="30">30 minutos</option>
+          <option value="40">40 minutos</option>
+          <option value="60">60 minutos</option>
+        </select>
+      </div>
+
+      <div class="col-lg-3">
+        <label class="small-muted mb-1">Cantidad de preguntas</label>
+        <select id="qCount" class="form-select">
+          <option value="30">30 preguntas</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="d-flex flex-wrap gap-4 mb-4">
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="shuffleOptions" checked>
+        <label class="form-check-label small-muted">Mezclar opciones</label>
+      </div>
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="showExplanation">
+        <label class="form-check-label small-muted">Mostrar sustento al responder</label>
+      </div>
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="lockOnAnswer" checked>
+        <label class="form-check-label small-muted">Bloquear al responder</label>
+      </div>
+    </div>
+
+    <div class="d-flex flex-wrap gap-3">
+      <button class="btn btn-primary btn-lg" id="btnStart" type="button">
+        <i class="bi bi-play-fill"></i> Iniciar simulacro
+      </button>
+      <button class="btn btn-outline-warning btn-lg" id="btnHow" type="button">
+        <i class="bi bi-info-circle"></i> Cómo funciona
+      </button>
+    </div>
+
+    <p class="small-muted mt-3">
+      Banco total cargado: <strong><span id="bankCount">...</span></strong> preguntas.
+    </p>
+  </section>
+
+  <!-- EXAM -->
+  <section id="screenExam" class="d-none mt-4">
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="glass-card p-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="question-meta">
+              <span class="badge-soft">Pregunta <span id="qIndex">1</span> / <span id="qTotal">30</span></span>
+              <span class="timer-pill" id="timeLeft"><i class="bi bi-clock"></i> 30:00</span>
+            </div>
+
+            <div class="d-flex gap-2">
+              <button class="btn btn-soft btn-sm" id="btnPrev" type="button" title="Anterior">
+                <i class="bi bi-arrow-left"></i>
+              </button>
+              <button class="btn btn-soft btn-sm" id="btnNext" type="button" title="Siguiente">
+                <i class="bi bi-arrow-right"></i>
+              </button>
+              <button class="btn btn-danger btn-sm" id="btnFinish" type="button">
+                <i class="bi bi-flag-fill"></i> Finalizar
+              </button>
+            </div>
+          </div>
+
+          <div class="progress mb-3">
+            <div class="progress-bar" id="progressBar" style="width:0%"></div>
+          </div>
+
+          <div class="question-wrap">
+            <div class="question-meta mb-2">
+              <span class="small-muted" id="qMeta">ID #—</span>
+              <button class="btn btn-soft btn-sm ms-auto" id="btnRead2" type="button">
+                <i class="bi bi-book"></i> Lectura
+              </button>
+            </div>
+
+            <div class="question-text" id="qText">Cargando...</div>
+            <div class="options" id="optionsBox"></div>
+
+            <div id="explainBox" class="card-inner p-3 mt-3 d-none">
+              <div class="small-muted mb-1"><strong>Sustento</strong></div>
+              <div id="qExplain" class="text-strong">—</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="side-panel">
+          <h5 class="side-title mb-2">Navegación</h5>
+          <div class="small-muted mb-2">
+            Respondidas: <strong><span id="answeredCount">0</span></strong> / <strong><span id="navTotal">0</span></strong>
+          </div>
+          <div class="nav-grid" id="navGrid"></div>
+
+          <hr class="hr-soft">
+
+          <div class="d-flex gap-2">
+            <button class="btn btn-soft w-50" id="btnClear" type="button">
+              <i class="bi bi-eraser"></i> Limpiar
+            </button>
+            <button class="btn btn-soft w-50" id="btnSave" type="button">
+              <i class="bi bi-download"></i> Guardar
+            </button>
+          </div>
+
+          <p class="small-muted mt-2">*Guardar exporta tus respuestas a JSON local.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="screenResults" class="d-none mt-4">
+    <div class="glass-card p-4 p-md-5">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+        <div>
+          <h2 class="section-title mb-1">Resultados</h2>
+          <p class="section-sub mb-0">Revisión final con sustento.</p>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-primary" id="btnRetry" type="button">
+            <i class="bi bi-arrow-repeat"></i> Nuevo intento
+          </button>
+          <button class="btn btn-soft" id="btnBackHome" type="button">
+            <i class="bi bi-house"></i> Inicio
+          </button>
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-3">
+          <div class="card-inner p-3">
+            <div class="small-muted">Puntaje</div>
+            <div class="section-title"><span id="score">0</span> / <span id="scoreTotal">0</span></div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card-inner p-3">
+            <div class="small-muted">Porcentaje</div>
+            <div class="section-title"><span id="percent">0</span>%</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card-inner p-3">
+            <div class="small-muted">Tiempo usado</div>
+            <div class="section-title" id="timeUsed">00:00</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card-inner p-3">
+            <div class="small-muted">Tema</div>
+            <div class="section-title" style="color:var(--edubotic-accent)" id="topicUsed">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="reviewList" class="d-flex flex-column gap-3"></div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Modal: Cómo funciona -->
+<div class="modal fade" id="howModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cómo funciona</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <ul class="mb-0">
+          <li>Carga el banco desde <code>questions.json</code>.</li>
+          <li>Eliges un <strong>tema</strong> y el sistema selecciona preguntas aleatorias de ese tema.</li>
+          <li>Antes de iniciar puedes leer la <strong>comprensión lectora</strong> del tema.</li>
+          <li>Al finalizar verás resultados y revisión con sustento.</li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" data-bs-dismiss="modal" type="button">Entendido</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Lectura -->
+<div class="modal fade" id="readModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-book"></i> Lectura del tema</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="small-muted mb-2" id="readTopicTitle">—</div>
+        <div class="card-inner p-3" style="white-space:pre-wrap; line-height:1.65;" id="readPassage">Cargando...</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-soft" data-bs-dismiss="modal" type="button">Cerrar</button>
+        <button class="btn btn-primary" id="btnBeginAfterRead" type="button">
+          <i class="bi bi-play-fill"></i> Comenzar examen
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
